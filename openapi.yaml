@@ -1,4 +1,4 @@
-openapi: 3.1.0
+openapi: 3.0.3
 info:
   title: Datalastic Maritime API
   version: '0'
@@ -2569,7 +2569,7 @@ paths:
           - 0
           - 1
           default: 0
-        example: 1
+        example: '1'
       - name: updated_from
         in: query
         description: Only return records updated on or after this date (yyyy-mm-dd).
