@@ -1,0 +1,29 @@
+{
+  "data": [
+    {
+      "id": 38914,
+      "imo": "9951783",
+      "vessel_name": "KARLOVASI",
+      "beneficial_owner": "Samos Steamship Co",
+      "beneficial_owner_country": "Greece",
+      "operator": "Samos Steamship Co",
+      "operator_country": "Greece",
+      "flag_name": null,
+      "vessel_type_code": "Bulk",
+      "built_year": "2023",
+      "buyer": null,
+      "dwt_design": 63470,
+      "class1_code": null,
+      "technical_manager": null,
+      "technical_manager_country": null,
+      "commercial_manager": "Samos Steamship Co",
+      "commercial_manager_country": "Greece",
+      "modified_at": "2020-01-01T00:00:00Z"
+    }
+  ],
+  "meta": {
+    "duration": 0.011,
+    "endpoint": "/api/maritime_reports/ownership",
+    "success": true
+  }
+}

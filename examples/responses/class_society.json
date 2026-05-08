@@ -1,0 +1,35 @@
+{
+  "data": [
+    {
+      "imo": "9950404",
+      "vessel_name": "DARYA RASHMI",
+      "vessel_type_code": "Bulk",
+      "flag_name": "Marshall Islands",
+      "built_year": "2023",
+      "dwt_design": 82210,
+      "special_survey_date": null,
+      "dry_dock_date": null,
+      "class1_code": "ABS",
+      "beneficial_owner_imo": "0783189",
+      "beneficial_owner": "Chellaram Shipping (Hong Kong) Ltd.",
+      "technical_manager_imo": "0783189",
+      "technical_manager": "Chellaram Shipping (Hong Kong) Ltd.",
+      "draft_design": 14.5,
+      "nt": 27155,
+      "gt": 44577,
+      "loa": 229.0,
+      "lbp": 225.5,
+      "depth": 20.35,
+      "beam_moduled": 32.26,
+      "engine_builder": "Hudong Heavy Machinery",
+      "engine_designer": "MAN B&W",
+      "propulsion_type_code": "MO",
+      "modified_at": "2023-10-19T00:00:00Z"
+    }
+  ],
+  "meta": {
+    "duration": 0.006,
+    "endpoint": "/api/maritime_reports/class_society",
+    "success": true
+  }
+}

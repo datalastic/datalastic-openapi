@@ -1,0 +1,2614 @@
+openapi: 3.1.0
+info:
+  title: Datalastic Maritime API
+  version: '0'
+  description: "REST API for real-time and historical maritime data — AIS vessel tracking,\nport information, static ship\
+    \ specs, and a suite of add-on datasets (dry\ndock, ownership, casualties, inspections, sales & demolitions, engines,\n\
+    classification societies).\n\n## Base paths\n\n| Group | Base path |\n|-------|-----------|\n| Core AIS & ports | `https://api.datalastic.com/api/v0`\
+    \ |\n| Add-on datasets | `https://api.datalastic.com/api/maritime_reports` |\n| Reports (async jobs) | `https://api.datalastic.com/api/v0`\
+    \ |\n\n## Authentication\nPass your API key as the `api-key` query parameter on every request.\nA single key works across\
+    \ all plans and endpoints.\n\n## Credits\nEvery **successful** request deducts credits from your monthly allowance.\n\
+    Failed requests (vessel not found, invalid identifier, etc.) are free.\n\n| Plan | Credits/month |\n|------|--------------|\n\
+    | Starter | 20 000 |\n| Experimenter | 80 000 |\n| Developer Pro+ | Unlimited |\n\nRate limit: **600 requests / minute**\
+    \ across all endpoints.\n\n## Async report pattern\nLarge datasets (full vessel list, historical location traffic, ownership\n\
+    bulk export, etc.) are generated asynchronously:\n\n1. **POST** `/api/v0/report` with a JSON body containing `report_type`\
+    \ (and\n   any filter params).\n2. Note the `report_id` in the response (`status: PENDING`).\n3. **GET** `/api/v0/report?api-key=…&report_id=…`\
+    \ until `status: DONE`.\n4. Download the CSV from `result_url`.\n"
+  contact:
+    email: support@datalastic.com
+    url: https://datalastic.com
+  license:
+    name: Commercial
+    url: https://datalastic.com/terms-of-services/
+servers:
+- url: https://api.datalastic.com
+  description: Production
+components:
+  securitySchemes:
+    ApiKeyQuery:
+      type: apiKey
+      in: query
+      name: api-key
+      description: Your Datalastic API key. Obtain it from your account after subscribing to any plan.
+  parameters:
+    ApiKey:
+      name: api-key
+      in: query
+      required: true
+      description: Your Datalastic API key.
+      schema:
+        type: string
+        example: YOUR_API_KEY
+  schemas:
+    Meta:
+      type: object
+      properties:
+        duration:
+          type: number
+          format: float
+          description: Server-side query time in seconds.
+          example: 0.012
+        endpoint:
+          type: string
+          example: /api/v0/vessel
+        success:
+          type: boolean
+          example: true
+    VesselLive:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          example: b8625b67-7142-cfd1-7b85-595cebfe4191
+        name:
+          type: string
+          example: MAERSK CHENNAI
+        mmsi:
+          type: string
+          example: '566093000'
+        imo:
+          type: string
+          example: '9525338'
+        eni:
+          type: string
+          nullable: true
+          description: European Number of Identification (inland waterways).
+        country_iso:
+          type: string
+          example: SG
+        country_name:
+          type: string
+          example: Singapore
+        type:
+          type: string
+          example: Cargo - Hazard A (Major)
+        type_specific:
+          type: string
+          example: Container Ship
+        lat:
+          type: number
+          format: float
+          example: 6.303473
+        lon:
+          type: number
+          format: float
+          example: 3.201678
+        speed:
+          type: number
+          format: float
+          description: Speed over ground in knots.
+          example: 14.2
+        course:
+          type: number
+          format: float
+          description: Course over ground in degrees (0-360).
+          example: 326
+        heading:
+          type: number
+          format: float
+          description: True heading in degrees (0-360).
+          example: 226
+        navigational_status:
+          type: string
+          example: Under way using engine
+        destination:
+          type: string
+          nullable: true
+          example: ROTTERDAM
+        last_position_epoch:
+          type: integer
+          example: 1624127400
+        last_position_UTC:
+          type: string
+          format: date-time
+          example: '2021-06-20T08:30:00Z'
+        area:
+          type: string
+          nullable: true
+          example: North Sea
+    VesselLivePro:
+      allOf:
+      - $ref: '#/components/schemas/VesselLive'
+      - type: object
+        properties:
+          eta_UTC:
+            type: string
+            format: date-time
+            nullable: true
+            example: '2021-06-25T08:00:00Z'
+          eta_epoch:
+            type: integer
+            nullable: true
+            example: 1624608000
+          atd_UTC:
+            type: string
+            format: date-time
+            nullable: true
+            description: Actual time of departure.
+            example: '2021-06-11T16:49:00Z'
+          draught_avg:
+            type: number
+            format: float
+            nullable: true
+            description: Current reported draught in metres.
+            example: 9.5
+          draught_max:
+            type: number
+            format: float
+            nullable: true
+            description: Maximum draught in metres.
+            example: 10.5
+          destination_port_uuid:
+            type: string
+            format: uuid
+            nullable: true
+    VesselInfo:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+        name:
+          type: string
+          example: MAERSK CHENNAI
+        mmsi:
+          type: string
+          example: '566093000'
+        imo:
+          type: string
+          example: '9525338'
+        callsign:
+          type: string
+          example: 9V9409
+        country_iso:
+          type: string
+          example: SG
+        country_name:
+          type: string
+          example: Singapore
+        type:
+          type: string
+          example: Cargo - Hazard A (Major)
+        type_specific:
+          type: string
+          example: Container Ship
+        gross_tonnage:
+          type: integer
+          nullable: true
+          example: 50869
+        deadweight:
+          type: integer
+          nullable: true
+          example: 61614
+        teu:
+          type: integer
+          nullable: true
+          description: Twenty-foot equivalent unit capacity (container ships only).
+          example: 4500
+        liquid_gas:
+          type: number
+          nullable: true
+          description: Liquid gas capacity in cubic metres.
+        length:
+          type: number
+          format: float
+          nullable: true
+          description: Length overall in metres.
+          example: 249.12
+        breadth:
+          type: number
+          format: float
+          nullable: true
+          description: Beam in metres.
+          example: 37.4
+        draught_avg:
+          type: number
+          format: float
+          nullable: true
+        draught_max:
+          type: number
+          format: float
+          nullable: true
+        speed_avg:
+          type: number
+          format: float
+          nullable: true
+          description: Typical service speed in km/h.
+        speed_max:
+          type: number
+          format: float
+          nullable: true
+          description: Maximum speed in km/h.
+        year_built:
+          type: integer
+          nullable: true
+          example: 2011
+        home_port:
+          type: string
+          nullable: true
+          example: SINGAPORE
+    VesselHistoryRecord:
+      type: object
+      properties:
+        mmsi:
+          type: string
+        lat:
+          type: number
+          format: float
+        lon:
+          type: number
+          format: float
+        speed:
+          type: number
+          format: float
+        course:
+          type: number
+          format: float
+        heading:
+          type: number
+          format: float
+        navigational_status:
+          type: string
+          nullable: true
+        destination:
+          type: string
+          nullable: true
+        timestamp_UTC:
+          type: string
+          format: date-time
+          example: '2021-09-15T12:34:00Z'
+        timestamp_epoch:
+          type: integer
+          example: 1631709240
+    Port:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          example: 37a8ac5b-d126-d7ce-9aca-7b8249c2efd2
+        port_name:
+          type: string
+          example: ROTTERDAM
+        country_iso:
+          type: string
+          example: NL
+        country_name:
+          type: string
+          example: Netherlands
+        unlocode:
+          type: string
+          example: NLRTM
+        port_type:
+          type: string
+          example: Port
+        lat:
+          type: number
+          format: float
+          example: 51.94331
+        lon:
+          type: number
+          format: float
+          example: 4.141812
+        area_lvl1:
+          type: string
+          nullable: true
+          example: UK Coast & Atlantic
+        area_lvl2:
+          type: string
+          nullable: true
+          example: Rotterdam Area
+    Terminal:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+        terminal_name:
+          type: string
+          example: ECT Delta Terminal
+        port_uuid:
+          type: string
+          format: uuid
+        port_name:
+          type: string
+          example: ROTTERDAM
+        country_iso:
+          type: string
+          example: NL
+        lat:
+          type: number
+          format: float
+        lon:
+          type: number
+          format: float
+        terminal_type:
+          type: string
+          nullable: true
+          example: Container
+    DryDock:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 3
+        imo:
+          type: string
+          example: '9169122'
+        vessel_name:
+          type: string
+          example: MSC ANNICK
+        special_survey_date:
+          type: string
+          format: date
+          nullable: true
+          example: '2025-09-10'
+        dry_dock_date:
+          type: string
+          format: date
+          nullable: true
+          example: '2025-09-10'
+        iopp_issue_date:
+          type: string
+          format: date
+          nullable: true
+          description: International Oil Pollution Prevention certificate issue date.
+          example: '2021-08-31'
+        iopp_exp_date:
+          type: string
+          format: date
+          nullable: true
+          description: IOPP certificate expiry date.
+          example: '2025-09-10'
+        country_name:
+          type: string
+          nullable: true
+        technical_manager:
+          type: string
+          nullable: true
+          example: MSC Shipmanagement Ltd
+        country_code:
+          type: string
+          nullable: true
+          example: CYP
+        website:
+          type: string
+          nullable: true
+          example: https://mscshipmanagement.com/
+        email:
+          type: string
+          nullable: true
+          example: safety@mscsmcy.com
+        phone:
+          type: string
+          nullable: true
+          example: +357 25 844 800
+        address:
+          type: string
+          nullable: true
+          example: MSC House, 8, Spyrou Kyprianou Avenue, Limassol, Cyprus
+        linkedin:
+          type: string
+          nullable: true
+        modified_at:
+          type: string
+          format: date-time
+          example: '2023-09-05T00:00:00Z'
+    MaritimeCompany:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 7654
+        short_name:
+          type: string
+          example: Avon Steamship
+        long_name:
+          type: string
+          example: Avon Steamship
+        company_type:
+          type: string
+          example: Independent Shipping
+        country_code:
+          type: string
+          example: USA
+        company_imo:
+          type: string
+          example: 0537883
+        company_status:
+          type: string
+          example: Active
+        website:
+          type: string
+          nullable: true
+        email:
+          type: string
+          nullable: true
+        phone:
+          type: string
+          nullable: true
+        address:
+          type: string
+          nullable: true
+          example: 2001 Marcus Avenue, North New Hyde Park NY 11042, USA
+        linkedin:
+          type: string
+          nullable: true
+        parent_company_imo:
+          type: string
+          nullable: true
+        parent_company_name:
+          type: string
+          nullable: true
+        modified_at:
+          type: string
+          format: date-time
+          example: '2021-06-25T00:00:00Z'
+    ShipCasualty:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1793
+        imo:
+          type: string
+          example: '9319569'
+        vessel_name:
+          type: string
+          example: VENTO
+        casualty_date:
+          type: string
+          format: date
+          example: '2023-09-03'
+        casualty_type:
+          type: string
+          example: Beached/Grounded
+        casualty_details:
+          type: string
+          description: Full narrative including subsequent update entries.
+          example: Container ship ran onto sandy bar at Cape Ammoglossa, Kos island, Greece.
+        modified_at:
+          type: string
+          format: date-time
+          example: '2023-09-15T00:00:00Z'
+    ShipInspection:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 10
+        imo:
+          type: string
+          example: '9362126'
+        vessel_name:
+          type: string
+          example: ESVAGT CASSIOPEIA
+        vessel_type_code:
+          type: string
+          example: Stan
+        flag_code:
+          type: string
+          example: DEN
+        inspection_date:
+          type: string
+          format: date
+          example: '2023-09-05'
+        inspection_authority:
+          type: string
+          example: Norway
+        inspection_port:
+          type: string
+          example: Tananger
+        inspection_type:
+          type: string
+          example: Detailed
+        detention:
+          type: string
+          enum:
+          - 'TRUE'
+          - 'FALSE'
+          example: 'FALSE'
+        ship_deficiencies:
+          type: string
+          description: Number of deficiencies found.
+          example: '4'
+        deficiency_description:
+          type: string
+          description: Semicolon-separated list of deficiency codes and descriptions.
+          example: Structural Conditions; 02109 - Permanent means of access; Not properly maintained
+        technical_ism_manager:
+          type: string
+          nullable: true
+          example: Esvagt A/S
+        country_code:
+          type: string
+          nullable: true
+          example: DEN
+        website:
+          type: string
+          nullable: true
+        email:
+          type: string
+          nullable: true
+        phone:
+          type: string
+          nullable: true
+        address:
+          type: string
+          nullable: true
+        company_imo:
+          type: string
+          nullable: true
+          example: 0792139
+        modified_at:
+          type: string
+          format: date-time
+          example: '2023-09-05T00:00:00Z'
+    ShipSPD:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 2
+        sales_report_date:
+          type: string
+          format: date
+          example: '2023-09-04'
+        imo:
+          type: string
+          example: '9104586'
+        vessel_name:
+          type: string
+          example: ONE HAPPY
+        flag_name:
+          type: string
+          example: Panama
+        vessel_type_code:
+          type: string
+          example: Bulk
+        built_year:
+          type: string
+          example: '1995'
+        dwt_design:
+          type: integer
+          description: Design deadweight tonnage.
+          example: 45455
+        gt:
+          type: integer
+          description: Gross tonnage.
+          example: 26091
+        ldt:
+          type: integer
+          description: Lightweight displacement tonnage.
+          example: 7726
+        seller:
+          type: string
+          nullable: true
+          example: One Navigation Denizcilik AS
+        buyer:
+          type: string
+          nullable: true
+          example: Indian Breakers
+        sales_price_usd_mio:
+          type: number
+          nullable: true
+          description: Sale price in millions USD.
+        sales_price_usd/ldt:
+          type: number
+          nullable: true
+          description: Sale price in USD per LDT.
+          example: 498
+        destination:
+          type: string
+          nullable: true
+          example: India
+        sales_type:
+          type: string
+          nullable: true
+          example: Sold for demo
+        dry_dock_date:
+          type: string
+          format: date
+          nullable: true
+          example: '2020-07-31'
+        special_survey_date:
+          type: string
+          format: date
+          nullable: true
+          example: '2025-07-31'
+        sales_note:
+          type: string
+          nullable: true
+        previous_sales_record:
+          type: string
+          nullable: true
+        modified_at:
+          type: string
+          format: date-time
+          example: '2023-09-04T00:00:00Z'
+    VesselOwnership:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 38914
+        imo:
+          type: string
+          example: '9951783'
+        vessel_name:
+          type: string
+          example: KARLOVASI
+        beneficial_owner:
+          type: string
+          nullable: true
+          example: Samos Steamship Co
+        beneficial_owner_country:
+          type: string
+          nullable: true
+          example: Greece
+        operator:
+          type: string
+          nullable: true
+          example: Samos Steamship Co
+        operator_country:
+          type: string
+          nullable: true
+          example: Greece
+        flag_name:
+          type: string
+          nullable: true
+        vessel_type_code:
+          type: string
+          example: Bulk
+        built_year:
+          type: string
+          example: '2023'
+        buyer:
+          type: string
+          nullable: true
+        dwt_design:
+          type: integer
+          nullable: true
+          example: 63470
+        class1_code:
+          type: string
+          nullable: true
+          description: Classification society code.
+        technical_manager:
+          type: string
+          nullable: true
+        technical_manager_country:
+          type: string
+          nullable: true
+        commercial_manager:
+          type: string
+          nullable: true
+          example: Samos Steamship Co
+        commercial_manager_country:
+          type: string
+          nullable: true
+          example: Greece
+        modified_at:
+          type: string
+          format: date-time
+          example: '2020-01-01T00:00:00Z'
+    ClassSociety:
+      type: object
+      properties:
+        imo:
+          type: string
+          example: '9950404'
+        vessel_name:
+          type: string
+          example: DARYA RASHMI
+        vessel_type_code:
+          type: string
+          example: Bulk
+        flag_name:
+          type: string
+          nullable: true
+          example: Marshall Islands
+        built_year:
+          type: string
+          example: '2023'
+        dwt_design:
+          type: integer
+          nullable: true
+          example: 82210
+        special_survey_date:
+          type: string
+          format: date
+          nullable: true
+        dry_dock_date:
+          type: string
+          format: date
+          nullable: true
+        class1_code:
+          type: string
+          nullable: true
+          description: Classification society code (e.g. ABS, LR, DNV).
+          example: ABS
+        beneficial_owner_imo:
+          type: string
+          nullable: true
+          example: 0783189
+        beneficial_owner:
+          type: string
+          nullable: true
+          example: Chellaram Shipping (Hong Kong) Ltd.
+        technical_manager_imo:
+          type: string
+          nullable: true
+          example: 0783189
+        technical_manager:
+          type: string
+          nullable: true
+          example: Chellaram Shipping (Hong Kong) Ltd.
+        draft_design:
+          type: number
+          nullable: true
+          description: Design draught in metres.
+          example: 14.5
+        nt:
+          type: integer
+          nullable: true
+          description: Net tonnage.
+          example: 27155
+        gt:
+          type: integer
+          nullable: true
+          description: Gross tonnage.
+          example: 44577
+        loa:
+          type: number
+          nullable: true
+          description: Length overall in metres.
+          example: 229.0
+        lbp:
+          type: number
+          nullable: true
+          description: Length between perpendiculars in metres.
+          example: 225.5
+        depth:
+          type: number
+          nullable: true
+          description: Moulded depth in metres.
+          example: 20.35
+        beam_moduled:
+          type: number
+          nullable: true
+          description: Moulded beam in metres.
+          example: 32.26
+        engine_builder:
+          type: string
+          nullable: true
+          example: Hudong Heavy Machinery
+        engine_designer:
+          type: string
+          nullable: true
+          example: MAN B&W
+        propulsion_type_code:
+          type: string
+          nullable: true
+          example: MO
+        modified_at:
+          type: string
+          format: date-time
+          example: '2023-10-19T00:00:00Z'
+    VesselEngine:
+      type: object
+      properties:
+        imo:
+          type: string
+          example: '9575149'
+        vessel_name:
+          type: string
+          example: DARYA MAYA
+        vessel_type_code:
+          type: string
+          example: Bulk
+        propulsion_type_code:
+          type: string
+          description: Propulsion type code (e.g. MO = Motor).
+          example: MO
+        mco:
+          type: integer
+          description: Maximum continuous output.
+          example: 8300
+        mco_unit:
+          type: string
+          example: kW
+        mco_rpm:
+          type: integer
+          description: Engine RPM at MCO.
+          example: 91
+        trading_category_code:
+          type: string
+          example: Live
+        built_year:
+          type: string
+          example: '2012'
+        gt:
+          type: integer
+          description: Gross tonnage.
+          example: 35812
+        engine_designation:
+          type: string
+          nullable: true
+          example: 5S60ME-C8
+        engine_builder:
+          type: string
+          nullable: true
+          example: HHM Shangchuan Diesel
+        engine_designer:
+          type: string
+          nullable: true
+          example: MAN B&W
+        modified_at:
+          type: string
+          format: date-time
+          example: '2023-10-17T00:00:00Z'
+    ReportJob:
+      type: object
+      properties:
+        report_id:
+          type: string
+          example: rpt_abc123
+        status:
+          type: string
+          enum:
+          - PENDING
+          - IN_PROGRESS
+          - DONE
+          - FAILED
+          example: PENDING
+        report_type:
+          type: string
+          example: ownership
+        created_at:
+          type: string
+          format: date-time
+        result_url:
+          type: string
+          format: uri
+          nullable: true
+          description: CSV download URL. Populated only when status is DONE.
+          example: null
+    Stat:
+      type: object
+      properties:
+        api_key:
+          type: string
+        plan:
+          type: string
+          example: Experimenter
+        credits_total:
+          type: integer
+          example: 80000
+        credits_used:
+          type: integer
+          example: 12430
+        credits_remaining:
+          type: integer
+          example: 67570
+        reset_date:
+          type: string
+          format: date
+          example: '2026-06-01'
+    ErrorResponse:
+      type: object
+      properties:
+        meta:
+          type: object
+          properties:
+            success:
+              type: boolean
+              example: false
+            endpoint:
+              type: string
+            error_message:
+              type: string
+              example: Invalid API key.
+            error_code:
+              type: integer
+              example: 401
+    VesselLiveProEst:
+      allOf:
+      - $ref: '#/components/schemas/VesselLivePro'
+      - type: object
+        properties:
+          estimated_position:
+            type: object
+            description: AI-estimated current position. Populated when the vessel is out of terrestrial AIS range (inactive
+              for 3+ hours). Based on last known position, destination port, and ETA.
+            properties:
+              lat:
+                type: number
+                format: float
+                description: Estimated latitude.
+                example: 1.5818719819246652
+              lon:
+                type: number
+                format: float
+                description: Estimated longitude.
+                example: -31.117992949793297
+security:
+- ApiKeyQuery: []
+tags:
+- name: Live Tracking
+  description: Real-time AIS vessel positions.
+- name: Historical Vessel Data
+  description: Past AIS positions for a specific vessel.
+- name: Location Traffic
+  description: All vessels currently within a geographic area.
+- name: Ship Static Data
+  description: Static vessel specifications and registry search.
+- name: Ports
+  description: Port finder and terminal lookup.
+- name: Reports
+  description: 'Asynchronous bulk data exports. POST to submit a job, GET to poll,
+
+    download the CSV via result_url once status is DONE.
+
+    '
+- name: Usage
+  description: API credit and request monitoring.
+- name: Add-ons - Dry Dock
+  description: Planned and completed dry dock periods.
+- name: Add-ons - Companies
+  description: Maritime company profiles (type, status, contacts, parent company).
+- name: Add-ons - Casualties
+  description: Incident records with type, date, and narrative.
+- name: Add-ons - Inspections
+  description: Port State Control inspection and detention records.
+- name: Add-ons - Sales & Demolitions
+  description: Ship sales, purchase, and demolition records.
+- name: Add-ons - Ownership
+  description: Beneficial owner, operator, and manager data.
+- name: Add-ons - Classification
+  description: Class society, survey dates, and structural dimensions.
+- name: Add-ons - Engines
+  description: Engine designation, builder, designer, and output data.
+paths:
+  /api/v0/vessel:
+    get:
+      tags:
+      - Live Tracking
+      summary: Real-time vessel position (basic)
+      description: 'Returns the latest AIS position and key attributes for a single vessel.
+
+        Identify the vessel by one of: `uuid`, `mmsi`, or `imo`.
+
+
+        **Credit cost:** 1 per vessel found.
+
+        **Typical response time:** ~5 ms.
+
+        '
+      operationId: getVessel
+      parameters:
+      - $ref: '#/components/parameters/ApiKey'
+      - name: uuid
+        in: query
+        schema:
+          type: string
+          format: uuid
+        example: b8625b67-7142-cfd1-7b85-595cebfe4191
+      - name: mmsi
+        in: query
+        schema:
+          type: string
+        example: '566093000'
+      - name: imo
+        in: query
+        schema:
+          type: string
+        example: '9525338'
+      responses:
+        '200':
+          description: Vessel found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/VesselLive'
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+              example:
+                data:
+                  uuid: b8625b67-7142-cfd1-7b85-595cebfe4191
+                  name: MAERSK CHENNAI
+                  mmsi: '566093000'
+                  imo: '9525338'
+                  eni: null
+                  country_iso: SG
+                  country_name: Singapore
+                  type: Cargo - Hazard A (Major)
+                  type_specific: Container Ship
+                  lat: 6.303473
+                  lon: 3.201678
+                  speed: 14.2
+                  course: 326
+                  heading: 226
+                  navigational_status: Under way using engine
+                  destination: ROTTERDAM
+                  last_position_epoch: 1624127400
+                  last_position_UTC: '2021-06-20T08:30:00Z'
+                  area: West Africa
+                meta:
+                  duration: 0.005
+                  endpoint: /api/v0/vessel
+                  success: true
+        '401':
+          description: Invalid or missing API key.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Vessel not found (no credits deducted).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Rate limit exceeded (600 req/min).
+  /api/v0/vessel_pro:
+    get:
+      tags:
+      - Live Tracking
+      summary: Real-time vessel position (pro)
+      description: 'Extends `/vessel` with ETA (UTC + epoch), ATD, current draught, and a
+
+        normalised destination port UUID.
+
+
+        **Credit cost:** 1 per vessel found.
+
+        **Typical response time:** ~900 ms (enrichment lookups).
+
+        '
+      operationId: getVesselPro
+      parameters:
+      - $ref: '#/components/parameters/ApiKey'
+      - name: uuid
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: mmsi
+        in: query
+        schema:
+          type: string
+      - name: imo
+        in: query
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Vessel found with extended data.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/VesselLivePro'
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+              example:
+                data:
+                  uuid: b8625b67-7142-cfd1-7b85-595cebfe4191
+                  name: MAERSK CHENNAI
+                  mmsi: '566093000'
+                  imo: '9525338'
+                  eni: null
+                  country_iso: SG
+                  country_name: Singapore
+                  type: Cargo - Hazard A (Major)
+                  type_specific: Container Ship
+                  lat: 6.303473
+                  lon: 3.201678
+                  speed: 14.2
+                  course: 326
+                  heading: 226
+                  navigational_status: Under way using engine
+                  destination: ROTTERDAM
+                  last_position_epoch: 1624127400
+                  last_position_UTC: '2021-06-20T08:30:00Z'
+                  area: West Africa
+                  eta_UTC: '2021-06-25T08:00:00Z'
+                  eta_epoch: 1624608000
+                  atd_UTC: '2021-06-11T16:49:00Z'
+                  draught_avg: 9.5
+                  draught_max: 10.5
+                  destination_port_uuid: 37a8ac5b-d126-d7ce-9aca-7b8249c2efd2
+                meta:
+                  duration: 0.91
+                  endpoint: /api/v0/vessel_pro
+                  success: true
+        '401':
+          description: Invalid or missing API key.
+        '404':
+          description: Vessel not found (no credits deducted).
+  /api/v0/vessel_pro_est:
+    get:
+      tags:
+      - Live Tracking
+      summary: 'SAT-E: estimated vessel position (beyond AIS)'
+      description: 'Returns the same data as `/vessel_pro` plus an `estimated_position` field containing an AI-calculated
+        lat/lon for vessels that are currently out of terrestrial AIS range.
+
+
+        The estimate is based on the vessel''s last known position, its reported destination port, and its ETA. Activated
+        automatically when a vessel has been inactive for 3+ hours.
+
+
+        **Credit cost:** 1 credit per vessel queried.
+
+        '
+      operationId: getVesselProEst
+      parameters:
+      - $ref: '#/components/parameters/ApiKey'
+      - name: uuid
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: mmsi
+        in: query
+        schema:
+          type: string
+        example: '566093000'
+      - name: imo
+        in: query
+        schema:
+          type: string
+        example: '9525338'
+      responses:
+        '200':
+          description: Vessel found. estimated_position is present when vessel is out of AIS range.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/VesselLiveProEst'
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+              example:
+                data:
+                  uuid: b8625b67-7142-cfd1-7b85-595cebfe4191
+                  name: MAERSK CHENNAI
+                  mmsi: '566093000'
+                  imo: '9525338'
+                  eni: null
+                  country_iso: SG
+                  country_name: Singapore
+                  type: Cargo - Hazard A (Major)
+                  type_specific: Container Ship
+                  lat: 6.303473
+                  lon: 3.201678
+                  speed: 14.2
+                  course: 326
+                  heading: 226
+                  navigational_status: Under way using engine
+                  destination: ROTTERDAM
+                  last_position_epoch: 1624127400
+                  last_position_UTC: '2021-06-20T08:30:00Z'
+                  area: West Africa
+                  eta_UTC: '2021-06-25T08:00:00Z'
+                  eta_epoch: 1624608000
+                  atd_UTC: '2021-06-11T16:49:00Z'
+                  draught_avg: 9.5
+                  draught_max: 10.5
+                  destination_port_uuid: 37a8ac5b-d126-d7ce-9aca-7b8249c2efd2
+                  estimated_position:
+                    lat: 1.5818719819246652
+                    lon: -31.117992949793297
+                meta:
+                  duration: 1.12
+                  endpoint: /api/v0/vessel_pro_est
+                  success: true
+        '401':
+          description: Invalid or missing API key.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Vessel not found (no credits deducted).
+  /api/v0/vessel_bulk:
+    get:
+      tags:
+      - Live Tracking
+      summary: Real-time positions for up to 100 vessels
+      description: 'Pass up to 100 MMSI or IMO numbers as comma-separated strings.
+
+        Credits are only deducted for vessels successfully retrieved.
+
+
+        **Credit cost:** 1 per vessel found.
+
+        '
+      operationId: getVesselBulk
+      parameters:
+      - $ref: '#/components/parameters/ApiKey'
+      - name: mmsi
+        in: query
+        description: Comma-separated MMSI numbers (max 100).
+        schema:
+          type: string
+        example: 566093000,636016785,477305700
+      - name: imo
+        in: query
+        description: Comma-separated IMO numbers (max 100).
+        schema:
+          type: string
+        example: 9525338,9321483
+      responses:
+        '200':
+          description: Results for all queried vessels.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/VesselLive'
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+        '401':
+          description: Invalid or missing API key.
+  /api/v0/vessel_inradius:
+    get:
+      tags:
+      - Location Traffic
+      summary: All vessels currently within an area
+      description: 'Returns all vessels inside the specified radius of a coordinate or port.
+
+        Optionally filter by vessel type or subtype.
+
+
+        **Credit cost:** 1 per vessel found, capped at 500 per request.
+
+        '
+      operationId: getVesselInRadius
+      parameters:
+      - $ref: '#/components/parameters/ApiKey'
+      - name: lat
+        in: query
+        description: Centre latitude. Use with lon and radius.
+        schema:
+          type: number
+          format: float
+        example: 51.94331
+      - name: lon
+        in: query
+        description: Centre longitude.
+        schema:
+          type: number
+          format: float
+        example: 4.141812
+      - name: radius
+        in: query
+        description: Search radius in nautical miles.
+        schema:
+          type: integer
+        example: 10
+      - name: port_unlocode
+        in: query
+        description: UN/LOCODE of a port (alternative to lat/lon).
+        schema:
+          type: string
+        example: NLRTM
+      - name: type
+        in: query
+        description: Filter by vessel type (e.g. Cargo, Tanker).
+        schema:
+          type: string
+        example: Cargo
+      - name: type_specific
+        in: query
+        description: Filter by vessel subtype (e.g. Container Ship).
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Vessels found within the area.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/VesselLive'
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+              example:
+                data:
+                - uuid: b8625b67-7142-cfd1-7b85-595cebfe4191
+                  name: MSC ANNA
+                  mmsi: '636016785'
+                  imo: '9321483'
+                  country_iso: LR
+                  country_name: Liberia
+                  type: Cargo
+                  type_specific: Container Ship
+                  lat: 51.9411
+                  lon: 4.1395
+                  speed: 3.1
+                  course: 210
+                  heading: 208
+                  navigational_status: Under way using engine
+                  destination: NLRTM
+                  last_position_epoch: 1624127300
+                  last_position_UTC: '2021-06-20T08:28:00Z'
+                  area: Rotterdam
+                - uuid: c9736c78-e253-dge2-8c96-606dfcgf5302
+                  name: EVER GIVEN
+                  mmsi: '353136000'
+                  imo: '9811000'
+                  country_iso: PA
+                  country_name: Panama
+                  type: Cargo
+                  type_specific: Container Ship
+                  lat: 51.9388
+                  lon: 4.121
+                  speed: 0.0
+                  course: 0
+                  heading: 185
+                  navigational_status: Moored
+                  destination: NLRTM
+                  last_position_epoch: 1624127100
+                  last_position_UTC: '2021-06-20T08:25:00Z'
+                  area: Rotterdam
+                meta:
+                  duration: 0.041
+                  endpoint: /api/v0/vessel_inradius
+                  success: true
+        '401':
+          description: Invalid or missing API key.
+  /api/v0/vessel_history:
+    get:
+      tags:
+      - Historical Vessel Data
+      summary: Historical AIS positions for a vessel
+      description: 'Returns a time-series of past AIS positions. Use `days` for a relative
+
+        window, or `date_from`/`date_to` for an absolute range. Omit both for
+
+        the most recent data.
+
+
+        **Credit cost:** 1 per vessel-day (2 vessels x 10 days = 20 credits).
+
+        '
+      operationId: getVesselHistory
+      parameters:
+      - $ref: '#/components/parameters/ApiKey'
+      - name: mmsi
+        in: query
+        schema:
+          type: string
+        example: '566093000'
+      - name: imo
+        in: query
+        schema:
+          type: string
+      - name: uuid
+        in: query
+        schema:
+          type: string
+          format: uuid
+      - name: days
+        in: query
+        description: Number of days back from today.
+        schema:
+          type: integer
+          minimum: 1
+        example: 7
+      - name: from
+        in: query
+        description: Start of date range (yyyy-mm-dd).
+        schema:
+          type: string
+          format: date
+        example: '2026-01-01'
+      - name: to
+        in: query
+        description: End of date range (yyyy-mm-dd).
+        schema:
+          type: string
+          format: date
+        example: '2026-01-31'
+      responses:
+        '200':
+          description: Ordered list of historical position records.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/VesselHistoryRecord'
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+              example:
+                data:
+                - mmsi: '566093000'
+                  lat: 6.303473
+                  lon: 3.201678
+                  speed: 14.2
+                  course: 326
+                  heading: 226
+                  navigational_status: Under way using engine
+                  destination: ROTTERDAM
+                  timestamp_UTC: '2021-06-20T08:30:00Z'
+                  timestamp_epoch: 1624174200
+                - mmsi: '566093000'
+                  lat: 5.891234
+                  lon: 2.987654
+                  speed: 13.8
+                  course: 328
+                  heading: 325
+                  navigational_status: Under way using engine
+                  destination: ROTTERDAM
+                  timestamp_UTC: '2021-06-20T04:30:00Z'
+                  timestamp_epoch: 1624159800
+                meta:
+                  duration: 0.023
+                  endpoint: /api/v0/vessel_history
+                  success: true
+        '401':
+          description: Invalid or missing API key.
+        '404':
+          description: Vessel not found (no credits deducted).
+  /api/v0/vessel_info:
+    get:
+      tags:
+      - Ship Static Data
+      summary: Static vessel specifications
+      description: 'Returns registry-level data: dimensions, tonnage, TEU capacity, call
+
+        sign, home port, year built, etc. Does not include live position.
+
+
+        **Credit cost:** 1 per vessel found.
+
+        '
+      operationId: getVesselInfo
+      parameters:
+      - $ref: '#/components/parameters/ApiKey'
+      - name: uuid
+        in: query
+        schema:
+          type: string
+          format: uuid
+        example: b8625b67-7142-cfd1-7b85-595cebfe4191
+      - name: mmsi
+        in: query
+        schema:
+          type: string
+        example: '566093000'
+      - name: imo
+        in: query
+        schema:
+          type: string
+        example: '9525338'
+      responses:
+        '200':
+          description: Static vessel data.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/VesselInfo'
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+              example:
+                data:
+                  uuid: b8625b67-7142-cfd1-7b85-595cebfe4191
+                  name: MAERSK CHENNAI
+                  mmsi: '566093000'
+                  imo: '9525338'
+                  callsign: 9V9409
+                  country_iso: SG
+                  country_name: Singapore
+                  type: Cargo - Hazard A (Major)
+                  type_specific: Container Ship
+                  gross_tonnage: 50869
+                  deadweight: 61614
+                  teu: 4500
+                  liquid_gas: null
+                  length: 249.12
+                  breadth: 37.4
+                  draught_avg: 9.5
+                  draught_max: 10.5
+                  speed_avg: 37.0
+                  speed_max: 46.3
+                  year_built: 2011
+                  home_port: SINGAPORE
+                meta:
+                  duration: 0.008
+                  endpoint: /api/v0/vessel_info
+                  success: true
+        '401':
+          description: Invalid or missing API key.
+        '404':
+          description: Vessel not found (no credits deducted).
+  /api/v0/vessel_find:
+    get:
+      tags:
+      - Ship Static Data
+      summary: Search vessel registry
+      description: 'Search vessels by name, flag, vessel type, or subtype. Returns a list
+
+        of matching vessels with static specifications.
+
+
+        **Credit cost:** 1 per vessel returned.
+
+        '
+      operationId: findVessels
+      parameters:
+      - $ref: '#/components/parameters/ApiKey'
+      - name: name
+        in: query
+        description: Partial or full vessel name.
+        schema:
+          type: string
+        example: MAERSK
+      - name: country_iso
+        in: query
+        description: Flag state ISO 3166-1 alpha-2 code.
+        schema:
+          type: string
+        example: NL
+      - name: type
+        in: query
+        description: Vessel type (e.g. Cargo, Tanker).
+        schema:
+          type: string
+        example: Cargo
+      - name: type_specific
+        in: query
+        description: Vessel subtype (see ship-types reference in the docs).
+        schema:
+          type: string
+        example: Container Ship
+      - name: page
+        in: query
+        schema:
+          type: integer
+          default: 1
+      responses:
+        '200':
+          description: Matching vessels.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/VesselInfo'
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+        '401':
+          description: Invalid or missing API key.
+  /api/v0/port_find:
+    get:
+      tags:
+      - Ports
+      summary: Find ports by name, country, or UNLOCODE
+      description: 'Search the ports database. Filter by name, country ISO, or UN/LOCODE.
+
+        A single request can return multiple matches (e.g. all ports in Italy).
+
+
+        **Credit cost:** 1 per port returned.
+
+        '
+      operationId: findPorts
+      parameters:
+      - $ref: '#/components/parameters/ApiKey'
+      - name: name
+        in: query
+        description: Full or partial port name.
+        schema:
+          type: string
+        example: rotterdam
+      - name: country_iso
+        in: query
+        schema:
+          type: string
+        example: NL
+      - name: unlocode
+        in: query
+        schema:
+          type: string
+        example: NLRTM
+      - name: uuid
+        in: query
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Matching ports.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Port'
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+              example:
+                data:
+                - uuid: 37a8ac5b-d126-d7ce-9aca-7b8249c2efd2
+                  port_name: ROTTERDAM
+                  country_iso: NL
+                  country_name: Netherlands
+                  unlocode: NLRTM
+                  port_type: Port
+                  lat: 51.94331
+                  lon: 4.141812
+                  area_lvl1: UK Coast & Atlantic
+                  area_lvl2: Rotterdam Area
+                meta:
+                  duration: 0.06
+                  endpoint: /api/v0/port_find
+                  success: true
+        '401':
+          description: Invalid or missing API key.
+  /api/v0/terminal_find:
+    get:
+      tags:
+      - Ports
+      summary: Find port terminals
+      description: 'Search terminals within a port. Identify the port by UN/LOCODE, or search by lat/lon + radius.
+
+
+        **Credit cost:** 1 credit per query (regardless of how many terminals are returned).
+
+        '
+      operationId: findTerminals
+      parameters:
+      - name: port_unlocode
+        in: query
+        schema:
+          type: string
+        example: NLRTM
+      - name: lat
+        in: query
+        description: Centre latitude. Use with lon and radius to search by location.
+        schema:
+          type: number
+          format: float
+      - name: lon
+        in: query
+        description: Centre longitude.
+        schema:
+          type: number
+          format: float
+      - name: radius
+        in: query
+        description: Radius in nautical miles around the lat/lon centre.
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Matching terminals.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Terminal'
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+        '401':
+          description: Invalid or missing API key.
+  /api/v0/report:
+    post:
+      tags:
+      - Reports
+      summary: Submit async report job
+      description: 'Initiates a bulk data export job. Returns `report_id` immediately.
+
+        Poll GET `/api/v0/report` until `status: DONE`, then download the CSV
+
+        from `result_url`.
+
+
+        ### Report types
+
+
+        | report_type | Description | Credit cost |
+
+        |---|---|---|
+
+        | `vessel_list` | Full vessel registry snapshot | 5 000 |
+
+        | `port_list` | Full port list snapshot | 500 |
+
+        | `request_usage` | Your API key usage log | Free |
+
+        | `inradius_history` | Historical AIS for a zone (max 7-day window, max 50 NM radius) | days x vessels found, capped
+        at 500/day |
+
+        | `dry_dock_dates` | Dry dock bulk export | Add-on pricing |
+
+        | `companies` | Maritime companies bulk export | Add-on pricing |
+
+        | `casualty` | Casualties bulk export | Add-on pricing |
+
+        | `inspections` | Inspections bulk export | Add-on pricing |
+
+        | `sales_purchase_demolitions` | Sales & demolitions bulk export | Add-on pricing |
+
+        | `ownership` | Ownership bulk export | Add-on pricing |
+
+        | `class_society` | Classification society bulk export | Add-on pricing |
+
+        | `engine` | Engine data bulk export | Add-on pricing |
+
+
+        Submitting any job costs 1 credit. `request_usage` is free.
+
+        '
+      operationId: submitReport
+      parameters:
+      - $ref: '#/components/parameters/ApiKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - report_type
+              properties:
+                report_type:
+                  type: string
+                  enum:
+                  - vessel_list
+                  - port_list
+                  - request_usage
+                  - inradius_history
+                  - dry_dock_dates
+                  - companies
+                  - casualty
+                  - inspections
+                  - sales_purchase_demolitions
+                  - ownership
+                  - class_society
+                  - engine
+                lat:
+                  type: number
+                  format: float
+                  description: Required for inradius_history. Centre latitude.
+                  example: 51.8951
+                lon:
+                  type: number
+                  format: float
+                  description: Required for inradius_history. Centre longitude.
+                  example: 4.3973
+                radius:
+                  type: integer
+                  description: Required for inradius_history. Radius in nautical miles (max 50).
+                  example: 10
+                from:
+                  type: string
+                  format: date
+                  description: Start date yyyy-mm-dd. inradius_history max 7-day window; request_usage max 31 days.
+                  example: '2022-07-01'
+                to:
+                  type: string
+                  format: date
+                  description: End date yyyy-mm-dd.
+                  example: '2022-07-05'
+                updated_from:
+                  type: string
+                  format: date
+                  description: For add-on bulk reports. Only include records updated on or after this date.
+                  example: '2023-01-01'
+            examples:
+              vessel_list:
+                summary: Full vessel registry
+                value:
+                  report_type: vessel_list
+              inradius_history:
+                summary: Historical traffic near Rotterdam, 1-5 July 2022
+                value:
+                  report_type: inradius_history
+                  lat: 51.8951
+                  lon: 4.3973
+                  radius: 10
+                  from: '2022-07-01'
+                  to: '2022-07-05'
+              request_usage:
+                summary: My API usage for December 2022
+                value:
+                  report_type: request_usage
+                  from: '2022-12-01'
+                  to: '2022-12-31'
+              ownership_bulk:
+                summary: All ownership records updated in 2023 or later
+                value:
+                  report_type: ownership
+                  updated_from: '2023-01-01'
+      responses:
+        '202':
+          description: Job accepted. Poll with the returned report_id.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ReportJob'
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+              example:
+                data:
+                  report_id: rpt_7f3a9c12
+                  status: PENDING
+                  report_type: inradius_history
+                  created_at: '2026-01-15T09:00:00Z'
+                  result_url: null
+                meta:
+                  duration: 0.021
+                  endpoint: /api/v0/report
+                  success: true
+        '400':
+          description: Invalid request payload.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Invalid or missing API key.
+    get:
+      tags:
+      - Reports
+      summary: Poll report status or list all reports
+      description: 'Check the status of a report job by `report_id`. Pass `report_id=_all`
+
+        to list every report generated with your key.
+
+
+        When `status` is `DONE` the response includes `result_url` for
+
+        downloading the CSV.
+
+        '
+      operationId: getReport
+      parameters:
+      - $ref: '#/components/parameters/ApiKey'
+      - name: report_id
+        in: query
+        required: true
+        description: Report ID from the POST response, or _all to list all.
+        schema:
+          type: string
+        example: rpt_abc123
+      responses:
+        '200':
+          description: Report status (and download URL when DONE).
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    oneOf:
+                    - $ref: '#/components/schemas/ReportJob'
+                    - type: array
+                      items:
+                        $ref: '#/components/schemas/ReportJob'
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+        '401':
+          description: Invalid or missing API key.
+        '404':
+          description: Report ID not found.
+  /api/v0/stat:
+    get:
+      tags:
+      - Usage
+      summary: Get API credit usage
+      description: 'Returns plan, total monthly credits, credits used, and cycle reset date.
+
+        **Free — does not consume any credits.**
+
+        '
+      operationId: getStat
+      parameters:
+      - $ref: '#/components/parameters/ApiKey'
+      responses:
+        '200':
+          description: Credit usage summary.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Stat'
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+              example:
+                data:
+                  api_key: xxxx...xxxx
+                  plan: Experimenter
+                  credits_total: 80000
+                  credits_used: 12430
+                  credits_remaining: 67570
+                  reset_date: '2026-06-01'
+                meta:
+                  duration: 0.003
+                  endpoint: /api/v0/stat
+                  success: true
+        '401':
+          description: Invalid or missing API key.
+  /api/maritime_reports/dry_dock_dates:
+    get:
+      tags:
+      - Add-ons - Dry Dock
+      summary: Dry dock dates for a vessel
+      description: 'Returns planned and completed dry dock periods, IOPP certificate dates,
+
+        and technical manager contact details.
+
+
+        For a **bulk CSV export** of all records, POST to `/api/v0/report`
+
+        with `report_type: dry_dock_dates`.
+
+        '
+      operationId: getDryDockDates
+      parameters:
+      - $ref: '#/components/parameters/ApiKey'
+      - name: imo
+        in: query
+        description: IMO vessel number.
+        schema:
+          type: string
+        example: '9169122'
+      - name: name
+        in: query
+        description: Vessel name.
+        schema:
+          type: string
+      - name: dry_dock_from
+        in: query
+        description: Filter — dry dock date on or after (yyyy-mm-dd).
+        schema:
+          type: string
+          format: date
+        example: '2023-01-01'
+      - name: dry_dock_to
+        in: query
+        description: Filter — dry dock date on or before (yyyy-mm-dd).
+        schema:
+          type: string
+          format: date
+        example: '2025-12-31'
+      responses:
+        '200':
+          description: Dry dock records for the vessel.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/DryDock'
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+              example:
+                data:
+                - id: 3
+                  imo: '9169122'
+                  vessel_name: MSC ANNICK
+                  special_survey_date: '2025-09-10'
+                  dry_dock_date: '2025-09-10'
+                  iopp_issue_date: '2021-08-31'
+                  iopp_exp_date: '2025-09-10'
+                  country_name: null
+                  technical_manager: MSC Shipmanagement Ltd
+                  country_code: CYP
+                  website: https://mscshipmanagement.com/
+                  email: safety@mscsmcy.com
+                  phone: +357 25 844 800
+                  address: MSC House, 8, Spyrou Kyprianou Avenue, Limassol, Cyprus
+                  linkedin: https://cy.linkedin.com/in/ravi-amarnath-41215b3b
+                  modified_at: '2023-09-05T00:00:00Z'
+                meta:
+                  duration: 0.181
+                  endpoint: /api/maritime_reports/dry_dock_dates
+                  success: true
+        '401':
+          description: Invalid or missing API key.
+        '404':
+          description: Vessel not found (no credits deducted).
+  /api/maritime_reports/companies:
+    get:
+      tags:
+      - Add-ons - Companies
+      summary: Maritime company profile
+      description: 'Returns company type, country, operational status, contact details, and
+
+        parent company information. Identify by `company_imo` or `name`.
+
+
+        For a **bulk CSV export**, POST to `/api/v0/report` with
+
+        `report_type: companies`.
+
+        '
+      operationId: getMaritimeCompany
+      parameters:
+      - $ref: '#/components/parameters/ApiKey'
+      - name: company_imo
+        in: query
+        description: IMO company number.
+        schema:
+          type: string
+        example: 0537883
+      - name: name
+        in: query
+        description: Company name (full or partial).
+        schema:
+          type: string
+        example: Maersk
+      - name: updated_from
+        in: query
+        description: Only return records updated on or after this date (yyyy-mm-dd).
+        schema:
+          type: string
+          format: date
+      responses:
+        '200':
+          description: Matching company records.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/MaritimeCompany'
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+        '401':
+          description: Invalid or missing API key.
+  /api/maritime_reports/casualty:
+    get:
+      tags:
+      - Add-ons - Casualties
+      summary: Ship casualty records
+      description: 'Returns incident records with casualty type, date, and a full
+
+        narrative including subsequent update entries.
+
+
+        For a **bulk CSV export**, POST to `/api/v0/report` with
+
+        `report_type: casualty`.
+
+        '
+      operationId: getShipCasualty
+      parameters:
+      - $ref: '#/components/parameters/ApiKey'
+      - name: imo
+        in: query
+        description: IMO vessel number.
+        schema:
+          type: string
+        example: '9319569'
+      - name: name
+        in: query
+        description: Vessel name.
+        schema:
+          type: string
+      - name: from
+        in: query
+        description: Start of casualty date range (yyyy-mm-dd).
+        schema:
+          type: string
+          format: date
+        example: '2023-09-01'
+      - name: to
+        in: query
+        description: End of casualty date range (yyyy-mm-dd).
+        schema:
+          type: string
+          format: date
+      responses:
+        '200':
+          description: Matching casualty records.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ShipCasualty'
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+              example:
+                data:
+                - id: 1793
+                  imo: '9319569'
+                  vessel_name: VENTO
+                  casualty_date: '2023-09-03'
+                  casualty_type: Beached/Grounded
+                  casualty_details: Container ship ran onto sandy bar and grounded at Cape Ammoglossa, Kos island, Greece,
+                    Aegean sea, en route from Aliaga to Ashdod.
+                  modified_at: '2023-09-15T00:00:00Z'
+                meta:
+                  duration: 0.018
+                  endpoint: /api/maritime_reports/casualty
+                  success: true
+        '401':
+          description: Invalid or missing API key.
+  /api/maritime_reports/inspections:
+    get:
+      tags:
+      - Add-ons - Inspections
+      summary: Port State Control inspections and detentions
+      description: 'Returns PSC inspection records: authority, port, type, detention flag,
+
+        deficiency count, and full deficiency descriptions.
+
+
+        For a **bulk CSV export**, POST to `/api/v0/report` with
+
+        `report_type: inspections`.
+
+        '
+      operationId: getShipInspections
+      parameters:
+      - $ref: '#/components/parameters/ApiKey'
+      - name: imo
+        in: query
+        description: IMO vessel number.
+        schema:
+          type: string
+        example: '9362126'
+      - name: name
+        in: query
+        description: Vessel name.
+        schema:
+          type: string
+      - name: from
+        in: query
+        description: Start of inspection date range (yyyy-mm-dd).
+        schema:
+          type: string
+          format: date
+        example: '2023-09-01'
+      - name: to
+        in: query
+        description: End of inspection date range (yyyy-mm-dd).
+        schema:
+          type: string
+          format: date
+      responses:
+        '200':
+          description: Matching inspection records.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ShipInspection'
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+        '401':
+          description: Invalid or missing API key.
+  /api/maritime_reports/spd:
+    get:
+      tags:
+      - Add-ons - Sales & Demolitions
+      summary: Ship sales, purchase, and demolition records
+      description: 'Returns transaction records: seller, buyer, sale price (total and per
+
+        LDT), sales type, and dry dock dates at time of sale.
+
+
+        For a **bulk CSV export**, POST to `/api/v0/report` with
+
+        `report_type: sales_purchase_demolitions`.
+
+        '
+      operationId: getShipSPD
+      parameters:
+      - $ref: '#/components/parameters/ApiKey'
+      - name: imo
+        in: query
+        description: IMO vessel number.
+        schema:
+          type: string
+        example: '9104586'
+      - name: name
+        in: query
+        description: Vessel name.
+        schema:
+          type: string
+      - name: from
+        in: query
+        description: Start of sales report date range (yyyy-mm-dd).
+        schema:
+          type: string
+          format: date
+        example: '2023-09-01'
+      - name: to
+        in: query
+        description: End of sales report date range (yyyy-mm-dd).
+        schema:
+          type: string
+          format: date
+      responses:
+        '200':
+          description: Matching sale/demolition records.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ShipSPD'
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+        '401':
+          description: Invalid or missing API key.
+  /api/maritime_reports/ownership:
+    get:
+      tags:
+      - Add-ons - Ownership
+      summary: Vessel beneficial owner, operator, and manager
+      description: 'Returns beneficial owner chain, operator, technical manager, and
+
+        commercial manager with country information. Filter by any of these
+
+        parties, by vessel, or by `updated_from`.
+
+
+        For a **bulk CSV export**, POST to `/api/v0/report` with
+
+        `report_type: ownership`.
+
+        '
+      operationId: getVesselOwnership
+      parameters:
+      - $ref: '#/components/parameters/ApiKey'
+      - name: imo
+        in: query
+        description: IMO vessel number.
+        schema:
+          type: string
+        example: '9951783'
+      - name: name
+        in: query
+        description: Vessel name.
+        schema:
+          type: string
+      - name: beneficial_owner
+        in: query
+        description: Beneficial owner name (partial match).
+        schema:
+          type: string
+        example: Steamship
+      - name: operator
+        in: query
+        description: Operator name.
+        schema:
+          type: string
+      - name: technical_manager
+        in: query
+        description: Technical manager name.
+        schema:
+          type: string
+      - name: commercial_manager
+        in: query
+        description: Commercial manager name.
+        schema:
+          type: string
+      - name: updated_from
+        in: query
+        description: Only return records updated on or after this date (yyyy-mm-dd).
+        schema:
+          type: string
+          format: date
+      responses:
+        '200':
+          description: Matching ownership records.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/VesselOwnership'
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+              example:
+                data:
+                - id: 38914
+                  imo: '9951783'
+                  vessel_name: KARLOVASI
+                  beneficial_owner: Samos Steamship Co
+                  beneficial_owner_country: Greece
+                  operator: Samos Steamship Co
+                  operator_country: Greece
+                  flag_name: null
+                  vessel_type_code: Bulk
+                  built_year: '2023'
+                  buyer: null
+                  dwt_design: 63470
+                  class1_code: null
+                  technical_manager: null
+                  technical_manager_country: null
+                  commercial_manager: Samos Steamship Co
+                  commercial_manager_country: Greece
+                  modified_at: '2020-01-01T00:00:00Z'
+                meta:
+                  duration: 0.011
+                  endpoint: /api/maritime_reports/ownership
+                  success: true
+        '401':
+          description: Invalid or missing API key.
+  /api/maritime_reports/class_society:
+    get:
+      tags:
+      - Add-ons - Classification
+      summary: Vessel classification society data
+      description: 'Returns class society code, survey and dry dock dates, full structural
+
+        dimensions (LOA, LBP, beam, depth), engine builder/designer, and
+
+        owner/manager references.
+
+
+        Set `fuzzy=1` for approximate name matching (e.g. "Erica" also matches
+
+        "Eric").
+
+
+        For a **bulk CSV export**, POST to `/api/v0/report` with
+
+        `report_type: class_society`.
+
+        '
+      operationId: getClassSociety
+      parameters:
+      - $ref: '#/components/parameters/ApiKey'
+      - name: imo
+        in: query
+        description: IMO vessel number.
+        schema:
+          type: string
+        example: '9950404'
+      - name: name
+        in: query
+        description: Vessel name.
+        schema:
+          type: string
+      - name: fuzzy
+        in: query
+        description: 0 for exact name match (default), 1 for approximate match.
+        schema:
+          type: integer
+          enum:
+          - 0
+          - 1
+          default: 0
+      - name: beneficial_owner
+        in: query
+        schema:
+          type: string
+      - name: beneficial_owner_imo
+        in: query
+        schema:
+          type: string
+      - name: technical_manager
+        in: query
+        schema:
+          type: string
+      - name: technical_manager_imo
+        in: query
+        schema:
+          type: string
+      - name: updated_from
+        in: query
+        description: Only return records updated on or after this date (yyyy-mm-dd).
+        schema:
+          type: string
+          format: date
+      responses:
+        '200':
+          description: Matching classification society records.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ClassSociety'
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+              example:
+                data:
+                - imo: '9950404'
+                  vessel_name: DARYA RASHMI
+                  vessel_type_code: Bulk
+                  flag_name: Marshall Islands
+                  built_year: '2023'
+                  dwt_design: 82210
+                  special_survey_date: null
+                  dry_dock_date: null
+                  class1_code: ABS
+                  beneficial_owner_imo: 0783189
+                  beneficial_owner: Chellaram Shipping (Hong Kong) Ltd.
+                  technical_manager_imo: 0783189
+                  technical_manager: Chellaram Shipping (Hong Kong) Ltd.
+                  draft_design: 14.5
+                  nt: 27155
+                  gt: 44577
+                  loa: 229.0
+                  lbp: 225.5
+                  depth: 20.35
+                  beam_moduled: 32.26
+                  engine_builder: Hudong Heavy Machinery
+                  engine_designer: MAN B&W
+                  propulsion_type_code: MO
+                  modified_at: '2023-10-19T00:00:00Z'
+                meta:
+                  duration: 0.006
+                  endpoint: /api/maritime_reports/class_society
+                  success: true
+        '401':
+          description: Invalid or missing API key.
+  /api/maritime_reports/engine:
+    get:
+      tags:
+      - Add-ons - Engines
+      summary: Vessel engine specifications
+      description: 'Returns engine designation, builder, designer, maximum continuous
+
+        output (MCO in kW and RPM), and propulsion type.
+
+
+        Set `fuzzy=1` for approximate name matching.
+
+
+        For a **bulk CSV export**, POST to `/api/v0/report` with
+
+        `report_type: engine`.
+
+        '
+      operationId: getVesselEngine
+      parameters:
+      - $ref: '#/components/parameters/ApiKey'
+      - name: imo
+        in: query
+        description: IMO vessel number.
+        schema:
+          type: string
+        example: '9575149'
+      - name: name
+        in: query
+        description: Vessel name (partial match when fuzzy=1).
+        schema:
+          type: string
+        example: DARYA
+      - name: fuzzy
+        in: query
+        description: 0 for exact name match (default), 1 for approximate match.
+        schema:
+          type: integer
+          enum:
+          - 0
+          - 1
+          default: 0
+        example: 1
+      - name: updated_from
+        in: query
+        description: Only return records updated on or after this date (yyyy-mm-dd).
+        schema:
+          type: string
+          format: date
+      responses:
+        '200':
+          description: Matching vessel engine records.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/VesselEngine'
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+              example:
+                data:
+                - imo: '9575149'
+                  vessel_name: DARYA MAYA
+                  vessel_type_code: Bulk
+                  propulsion_type_code: MO
+                  mco: 8300
+                  mco_unit: kW
+                  mco_rpm: 91
+                  trading_category_code: Live
+                  built_year: '2012'
+                  gt: 35812
+                  engine_designation: 5S60ME-C8
+                  engine_builder: HHM Shangchuan Diesel
+                  engine_designer: MAN B&W
+                  modified_at: '2023-10-17T00:00:00Z'
+                meta:
+                  duration: 0.01
+                  endpoint: /api/maritime_reports/engine
+                  success: true
+        '401':
+          description: Invalid or missing API key.

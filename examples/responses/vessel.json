@@ -1,0 +1,28 @@
+{
+  "data": {
+    "uuid": "b8625b67-7142-cfd1-7b85-595cebfe4191",
+    "name": "MAERSK CHENNAI",
+    "mmsi": "566093000",
+    "imo": "9525338",
+    "eni": null,
+    "country_iso": "SG",
+    "country_name": "Singapore",
+    "type": "Cargo - Hazard A (Major)",
+    "type_specific": "Container Ship",
+    "lat": 6.303473,
+    "lon": 3.201678,
+    "speed": 14.2,
+    "course": 326,
+    "heading": 226,
+    "navigational_status": "Under way using engine",
+    "destination": "ROTTERDAM",
+    "last_position_epoch": 1624127400,
+    "last_position_UTC": "2021-06-20T08:30:00Z",
+    "area": "West Africa"
+  },
+  "meta": {
+    "duration": 0.005,
+    "endpoint": "/api/v0/vessel",
+    "success": true
+  }
+}

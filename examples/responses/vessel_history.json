@@ -1,0 +1,33 @@
+{
+  "data": [
+    {
+      "mmsi": "566093000",
+      "lat": 5.891234,
+      "lon": 2.987654,
+      "speed": 13.8,
+      "course": 328,
+      "heading": 325,
+      "navigational_status": "Under way using engine",
+      "destination": "ROTTERDAM",
+      "timestamp_UTC": "2021-06-20T04:30:00Z",
+      "timestamp_epoch": 1624159800
+    },
+    {
+      "mmsi": "566093000",
+      "lat": 6.303473,
+      "lon": 3.201678,
+      "speed": 14.2,
+      "course": 326,
+      "heading": 226,
+      "navigational_status": "Under way using engine",
+      "destination": "ROTTERDAM",
+      "timestamp_UTC": "2021-06-20T08:30:00Z",
+      "timestamp_epoch": 1624174200
+    }
+  ],
+  "meta": {
+    "duration": 0.023,
+    "endpoint": "/api/v0/vessel_history",
+    "success": true
+  }
+}

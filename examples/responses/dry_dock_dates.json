@@ -1,0 +1,27 @@
+{
+  "data": [
+    {
+      "id": 3,
+      "imo": "9169122",
+      "vessel_name": "MSC ANNICK",
+      "special_survey_date": "2025-09-10",
+      "dry_dock_date": "2025-09-10",
+      "iopp_issue_date": "2021-08-31",
+      "iopp_exp_date": "2025-09-10",
+      "country_name": null,
+      "technical_manager": "MSC Shipmanagement Ltd",
+      "country_code": "CYP",
+      "website": "https://mscshipmanagement.com/",
+      "email": "safety@mscsmcy.com",
+      "phone": "+357 25 844 800",
+      "address": "MSC House, 8, Spyrou Kyprianou Avenue, Limassol, Cyprus",
+      "linkedin": "https://cy.linkedin.com/in/ravi-amarnath-41215b3b",
+      "modified_at": "2023-09-05T00:00:00Z"
+    }
+  ],
+  "meta": {
+    "duration": 0.181,
+    "endpoint": "/api/maritime_reports/dry_dock_dates",
+    "success": true
+  }
+}

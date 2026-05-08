@@ -1,0 +1,15 @@
+{
+  "data": {
+    "api_key": "xxxx...xxxx",
+    "plan": "Experimenter",
+    "credits_total": 80000,
+    "credits_used": 12430,
+    "credits_remaining": 67570,
+    "reset_date": "2026-06-01"
+  },
+  "meta": {
+    "duration": 0.003,
+    "endpoint": "/api/v0/stat",
+    "success": true
+  }
+}

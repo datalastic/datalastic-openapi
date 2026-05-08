@@ -1,0 +1,49 @@
+{
+  "data": [
+    {
+      "uuid": "b8625b67-7142-cfd1-7b85-595cebfe4191",
+      "name": "MSC ANNA",
+      "mmsi": "636016785",
+      "imo": "9321483",
+      "country_iso": "LR",
+      "country_name": "Liberia",
+      "type": "Cargo",
+      "type_specific": "Container Ship",
+      "lat": 51.9411,
+      "lon": 4.1395,
+      "speed": 3.1,
+      "course": 210,
+      "heading": 208,
+      "navigational_status": "Under way using engine",
+      "destination": "NLRTM",
+      "last_position_epoch": 1624127300,
+      "last_position_UTC": "2021-06-20T08:28:00Z",
+      "area": "Rotterdam"
+    },
+    {
+      "uuid": "c9736c78-e253-4ge2-8c96-606dfcaf5302",
+      "name": "EVER GIVEN",
+      "mmsi": "353136000",
+      "imo": "9811000",
+      "country_iso": "PA",
+      "country_name": "Panama",
+      "type": "Cargo",
+      "type_specific": "Container Ship",
+      "lat": 51.9388,
+      "lon": 4.121,
+      "speed": 0.0,
+      "course": 0,
+      "heading": 185,
+      "navigational_status": "Moored",
+      "destination": "NLRTM",
+      "last_position_epoch": 1624127100,
+      "last_position_UTC": "2021-06-20T08:25:00Z",
+      "area": "Rotterdam"
+    }
+  ],
+  "meta": {
+    "duration": 0.041,
+    "endpoint": "/api/v0/vessel_inradius",
+    "success": true
+  }
+}

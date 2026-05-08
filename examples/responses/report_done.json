@@ -1,0 +1,14 @@
+{
+  "data": {
+    "report_id": "rpt_7f3a9c12",
+    "status": "DONE",
+    "report_type": "inradius_history",
+    "created_at": "2026-01-15T09:00:00Z",
+    "result_url": "https://api.datalastic.com/reports/rpt_7f3a9c12.csv?token=eyJhbGciOiJ..."
+  },
+  "meta": {
+    "duration": 0.004,
+    "endpoint": "/api/v0/report",
+    "success": true
+  }
+}

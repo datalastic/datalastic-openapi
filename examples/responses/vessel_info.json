@@ -1,0 +1,30 @@
+{
+  "data": {
+    "uuid": "b8625b67-7142-cfd1-7b85-595cebfe4191",
+    "name": "MAERSK CHENNAI",
+    "mmsi": "566093000",
+    "imo": "9525338",
+    "callsign": "9V9409",
+    "country_iso": "SG",
+    "country_name": "Singapore",
+    "type": "Cargo - Hazard A (Major)",
+    "type_specific": "Container Ship",
+    "gross_tonnage": 50869,
+    "deadweight": 61614,
+    "teu": 4500,
+    "liquid_gas": null,
+    "length": 249.12,
+    "breadth": 37.4,
+    "draught_avg": 9.5,
+    "draught_max": 10.5,
+    "speed_avg": 37.0,
+    "speed_max": 46.3,
+    "year_built": 2011,
+    "home_port": "SINGAPORE"
+  },
+  "meta": {
+    "duration": 0.008,
+    "endpoint": "/api/v0/vessel_info",
+    "success": true
+  }
+}

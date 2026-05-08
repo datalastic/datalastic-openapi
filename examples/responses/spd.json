@@ -1,0 +1,32 @@
+{
+  "data": [
+    {
+      "id": 2,
+      "sales_report_date": "2023-09-04",
+      "imo": "9104586",
+      "vessel_name": "ONE HAPPY",
+      "flag_name": "Panama",
+      "vessel_type_code": "Bulk",
+      "built_year": "1995",
+      "dwt_design": 45455,
+      "gt": 26091,
+      "ldt": 7726,
+      "seller": "One Navigation Denizcilik AS",
+      "buyer": "Indian Breakers",
+      "sales_price_usd_mio": null,
+      "sales_price_usd/ldt": 498,
+      "destination": "India",
+      "sales_type": "Sold for demo",
+      "dry_dock_date": "2020-07-31",
+      "special_survey_date": "2025-07-31",
+      "sales_note": null,
+      "previous_sales_record": null,
+      "modified_at": "2023-09-04T00:00:00Z"
+    }
+  ],
+  "meta": {
+    "duration": 0.011,
+    "endpoint": "/api/maritime_reports/spd",
+    "success": true
+  }
+}

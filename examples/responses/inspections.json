@@ -1,0 +1,31 @@
+{
+  "data": [
+    {
+      "id": 10,
+      "imo": "9362126",
+      "vessel_name": "ESVAGT CASSIOPEIA",
+      "vessel_type_code": "Stan",
+      "flag_code": "DEN",
+      "inspection_date": "2023-09-05",
+      "inspection_authority": "Norway",
+      "inspection_port": "Tananger",
+      "inspection_type": "Detailed",
+      "detention": "FALSE",
+      "ship_deficiencies": "4",
+      "deficiency_description": "Structural Conditions; 02109 - Permanent means of access; Not properly maintained; Emergency Systems; 04108 - Muster list; Incomplete",
+      "technical_ism_manager": "Esvagt A/S",
+      "country_code": "DEN",
+      "website": "http://www.esvagt.dk",
+      "email": "mail@esvagt.dk",
+      "phone": "+45 78 73 07 30",
+      "address": "Dokvej 4, 6700 Esbjerg, Denmark",
+      "company_imo": "0792139",
+      "modified_at": "2023-09-05T00:00:00Z"
+    }
+  ],
+  "meta": {
+    "duration": 0.011,
+    "endpoint": "/api/maritime_reports/inspections",
+    "success": true
+  }
+}

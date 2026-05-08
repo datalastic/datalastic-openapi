@@ -1,0 +1,21 @@
+{
+  "data": [
+    {
+      "uuid": "37a8ac5b-d126-d7ce-9aca-7b8249c2efd2",
+      "port_name": "ROTTERDAM",
+      "country_iso": "NL",
+      "country_name": "Netherlands",
+      "unlocode": "NLRTM",
+      "port_type": "Port",
+      "lat": 51.94331,
+      "lon": 4.141812,
+      "area_lvl1": "UK Coast & Atlantic",
+      "area_lvl2": "Rotterdam Area"
+    }
+  ],
+  "meta": {
+    "duration": 0.06,
+    "endpoint": "/api/v0/port_find",
+    "success": true
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "data": [
+    {
+      "id": 1793,
+      "imo": "9319569",
+      "vessel_name": "VENTO",
+      "casualty_date": "2023-09-03",
+      "casualty_type": "Beached/Grounded",
+      "casualty_details": "Container ship ran onto sandy bar and grounded at Cape Ammoglossa, Kos island, Greece, Aegean sea, en route from Aliaga to Ashdod.",
+      "modified_at": "2023-09-15T00:00:00Z"
+    },
+    {
+      "id": 13960,
+      "imo": "9319569",
+      "vessel_name": "VENTO",
+      "casualty_date": "2008-05-10",
+      "casualty_type": "Other",
+      "casualty_details": "Reported drifting due engine trouble. Taken in tow and proceeding to Osaka.",
+      "modified_at": "2008-05-10T00:00:00Z"
+    }
+  ],
+  "meta": {
+    "duration": 0.018,
+    "endpoint": "/api/maritime_reports/casualty",
+    "success": true
+  }
+}

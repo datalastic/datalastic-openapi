@@ -1,0 +1,8 @@
+{
+  "meta": {
+    "success": false,
+    "endpoint": "/api/v0/vessel",
+    "error_message": "Vessel not found. No credits were deducted.",
+    "error_code": 404
+  }
+}

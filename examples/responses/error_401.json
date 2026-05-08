@@ -1,0 +1,8 @@
+{
+  "meta": {
+    "success": false,
+    "endpoint": "/api/v0/vessel",
+    "error_message": "Invalid API key.",
+    "error_code": 401
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "data": [
+    {
+      "imo": "9575149",
+      "vessel_name": "DARYA MAYA",
+      "vessel_type_code": "Bulk",
+      "propulsion_type_code": "MO",
+      "mco": 8300,
+      "mco_unit": "kW",
+      "mco_rpm": 91,
+      "trading_category_code": "Live",
+      "built_year": "2012",
+      "gt": 35812,
+      "engine_designation": "5S60ME-C8",
+      "engine_builder": "HHM Shangchuan Diesel",
+      "engine_designer": "MAN B&W",
+      "modified_at": "2023-10-17T00:00:00Z"
+    },
+    {
+      "imo": "9950404",
+      "vessel_name": "DARYA RASHMI",
+      "vessel_type_code": "Bulk",
+      "propulsion_type_code": "MO",
+      "mco": 9000,
+      "mco_unit": "kW",
+      "mco_rpm": 84,
+      "trading_category_code": "Live",
+      "built_year": "2023",
+      "gt": 44577,
+      "engine_designation": "6S60ME-C10-HPSCR",
+      "engine_builder": "Hudong Heavy Machinery",
+      "engine_designer": "MAN B&W",
+      "modified_at": "2023-10-19T00:00:00Z"
+    }
+  ],
+  "meta": {
+    "duration": 0.01,
+    "endpoint": "/api/maritime_reports/engine",
+    "success": true
+  }
+}

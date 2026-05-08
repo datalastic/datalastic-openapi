@@ -1,0 +1,8 @@
+{
+  "meta": {
+    "success": false,
+    "endpoint": "/api/v0/vessel",
+    "error_message": "Too many requests. Rate limit is 600 requests per minute.",
+    "error_code": 429
+  }
+}

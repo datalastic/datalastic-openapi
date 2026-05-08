@@ -1,0 +1,41 @@
+name: Validate OpenAPI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "openapi.yaml"
+      - ".github/workflows/validate.yml"
+  pull_request:
+    paths:
+      - "openapi.yaml"
+      - ".github/workflows/validate.yml"
+
+jobs:
+  validate:
+    name: Lint & validate spec
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install Redocly CLI
+        run: npm install -g @redocly/cli@latest
+
+      - name: Validate with Redocly
+        run: redocly lint openapi.yaml --format=stylish
+
+      - name: Install swagger-cli
+        run: npm install -g @apidevtools/swagger-cli
+
+      - name: Validate with swagger-cli
+        run: swagger-cli validate openapi.yaml
+
+      - name: Bundle (check for $ref errors)
+        run: redocly bundle openapi.yaml --output /tmp/bundled.yaml
