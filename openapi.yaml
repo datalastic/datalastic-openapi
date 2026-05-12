@@ -990,6 +990,8 @@ tags:
   description: Class society, survey dates, and structural dimensions.
 - name: Add-ons - Engines
   description: Engine designation, builder, designer, and output data.
+- name: Sea Routes
+  description: Calculate navigable sea routes between ports or coordinates.
 paths:
   /api/v0/vessel:
     get:
@@ -1154,7 +1156,7 @@ paths:
           description: Invalid or missing API key.
         '404':
           description: Vessel not found (no credits deducted).
-  /api/v0/vessel_pro_est:
+  /api/ext/vessel_pro_est:
     get:
       tags:
       - Live Tracking
@@ -1232,7 +1234,7 @@ paths:
                     lon: -31.117992949793297
                 meta:
                   duration: 1.12
-                  endpoint: /api/v0/vessel_pro_est
+                  endpoint: /api/ext/vessel_pro_est
                   success: true
         '401':
           description: Invalid or missing API key.
@@ -1614,6 +1616,15 @@ paths:
         schema:
           type: integer
           default: 1
+      - name: fuzzy
+        in: query
+        description: '`0` for exact name match (default), `1` for approximate match.'
+        schema:
+          type: integer
+          enum:
+          - 0
+          - 1
+          default: 0
       responses:
         '200':
           description: Matching vessels.
@@ -1667,6 +1678,21 @@ paths:
         schema:
           type: string
           format: uuid
+      - name: fuzzy
+        in: query
+        description: '`0` for exact name match (default), `1` for approximate match.'
+        schema:
+          type: integer
+          enum:
+          - 0
+          - 1
+          default: 0
+      - name: port_type
+        in: query
+        description: 'Filter by port type: `port`, `anchorage`, `terminal`.'
+        schema:
+          type: string
+          example: port
       responses:
         '200':
           description: Matching ports.
@@ -1699,7 +1725,7 @@ paths:
                   success: true
         '401':
           description: Invalid or missing API key.
-  /api/v0/terminal_find:
+  /api/v0/port:
     get:
       tags:
       - Ports
@@ -1712,7 +1738,7 @@ paths:
         '
       operationId: findTerminals
       parameters:
-      - name: port_unlocode
+      - name: unlocode
         in: query
         schema:
           type: string
@@ -1746,6 +1772,88 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/Terminal'
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+        '401':
+          description: Invalid or missing API key.
+  /api/ext/route:
+    get:
+      tags:
+      - Sea Routes
+      summary: Calculate sea route between two points
+      description: 'Calculates the optimal navigable sea route between two waypoints. Either endpoint can be specified as
+        a UN/LOCODE port or lat/lon coordinates.
+
+
+        **Credit cost:** 1 credit per query.
+
+        '
+      operationId: getSeaRoute
+      parameters:
+      - $ref: '#/components/parameters/ApiKey'
+      - name: port_unlocode_from
+        in: query
+        description: Origin port UN/LOCODE (alternative to lat_from/lon_from).
+        schema:
+          type: string
+        example: FIHEL
+      - name: lat_from
+        in: query
+        description: Origin latitude.
+        schema:
+          type: number
+          format: float
+      - name: lon_from
+        in: query
+        description: Origin longitude.
+        schema:
+          type: number
+          format: float
+      - name: port_unlocode_to
+        in: query
+        description: Destination port UN/LOCODE (alternative to lat_to/lon_to).
+        schema:
+          type: string
+      - name: lat_to
+        in: query
+        description: Destination latitude.
+        schema:
+          type: number
+          format: float
+        example: 59.437
+      - name: lon_to
+        in: query
+        description: Destination longitude.
+        schema:
+          type: number
+          format: float
+        example: 24.7536
+      responses:
+        '200':
+          description: Calculated route with waypoints and total distance.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      distance_nm:
+                        type: number
+                        format: float
+                        description: Total route distance in nautical miles.
+                      waypoints:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            lat:
+                              type: number
+                              format: float
+                            lon:
+                              type: number
+                              format: float
                   meta:
                     $ref: '#/components/schemas/Meta'
         '401':
